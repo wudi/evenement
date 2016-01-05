@@ -6,7 +6,7 @@ Evenement is a very simple event dispatching library for PHP write in C. Base on
 ## Build extension
 
 ```
- git clone git@github.com:PHPTinker/evenement.git
+ git clone git@github.com:putil/evenement.git
  cd evenement
  /usr/local/bin/phpize
  ./configure --with-php-config=/usr/local/bin/php-config

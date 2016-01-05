@@ -1,0 +1,75 @@
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+
+### .idea  files come from Ruby Mine, a Rails IDE. ###
+.idea
+.idea/workspace.xml
+
+### Eclipse Files ###
+.classpath
+.project
+.settings/
+
+### Ignore Vim untitled and unsaved buffer swapfiles ###
+*.s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+*~
+
+### .project files come from Aptana Studio, a Rails IDE. ###
+pickle-email-*.html
+.project
+
+### Files from NetBeans IDE ###
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+
+### SublimeText project files ###
+*.sublime-workspace
+
+### Files from Textmate IDE ###
+*.tmproj
+*.tmproject
+tmtags
+
+### File from IntelliJ ###
+*.iml
+*.ipr
+*.iws
+.idea/

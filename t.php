@@ -1,5 +1,4 @@
 <?php
-
 trait a{
     protected $listeners;
 
@@ -75,6 +74,14 @@ echo "\nremoveAllListeners\n";
 $event->removeAllListeners();
 var_dump($event);
 
+$emitter = new Evenement\EventEmitter();
+$emitter->on('user.created', function ($user) {
+    var_dump($user);
+});
+
+var_dump($emitter);
+
+$emitter->emit('user.created', array("eagle"));
 
 
 

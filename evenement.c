@@ -57,6 +57,10 @@ zend_module_entry evenement_module_entry = {
 ZEND_GET_MODULE(evenement)
 #endif
 
+
+/* {{{ ARG_INFO for event_emitter_interface
+ * proto: on($event, callable $listener)
+ */
 ZEND_BEGIN_ARG_INFO_EX(interface_event_listener_args, 0, 0, 2)
 	ZEND_ARG_INFO(0, event)
 	ZEND_ARG_TYPE_INFO(0, listener, IS_CALLABLE, 0)
@@ -73,43 +77,17 @@ ZEND_BEGIN_ARG_INFO_EX(interface_event_arguments_args, 0, 0, 2)
 	ZEND_ARG_INFO(0, event)
 	ZEND_ARG_ARRAY_INFO(0, arguments, 0)
 ZEND_END_ARG_INFO()
+/* }}} */
 
-zend_function_entry event_emitter_interface_methods[] = {
+static const zend_function_entry event_emitter_interface_methods[] = {
 	PHP_ABSTRACT_ME(event_emitter_interface, on, 				 interface_event_listener_args)
 	PHP_ABSTRACT_ME(event_emitter_interface, once, 				 interface_event_listener_args)
 	PHP_ABSTRACT_ME(event_emitter_interface, removeListener, 	 interface_event_listener_args)
 	PHP_ABSTRACT_ME(event_emitter_interface, removeAllListeners, interface_event_args)
 	PHP_ABSTRACT_ME(event_emitter_interface, listeners, 		 interface_event_args)
 	PHP_ABSTRACT_ME(event_emitter_interface, emit, 				 interface_event_arguments_args)
-	{NULL, NULL, NULL}
+    PHP_FE_END
 };
-
-ZEND_MINIT_FUNCTION(event_emitter_interface){
-	zend_class_entry ce;
-	INIT_CLASS_ENTRY(ce, "Evenement\\EventEmitterInterface", event_emitter_interface_methods);
-	event_emitter_interface_ce = zend_register_internal_class(&ce TSRMLS_CC);
-	event_emitter_interface_ce->ce_flags |= ZEND_ACC_INTERFACE;
-
-	return SUCCESS;
-}
-
-zend_function_entry event_emitter_methods[] = {
-	{NULL, NULL, NULL}
-};
-
-ZEND_MINIT_FUNCTION(event_emitter){
-	zend_class_entry ce;
-	INIT_CLASS_ENTRY(ce, "Evenement\\EventEmitter", event_emitter_methods);
-	event_emitter_ce = zend_register_internal_class(&ce TSRMLS_CC);
-	//event_emitter_ce->ce_flags |= ZEND_ACC_INTERFACE;
-	//zend_class_implements(event_emitter_ce, 1, event_emitter_interface_ce);
-
-	return SUCCESS;
-}
-
-
-/* {{{ EventEmitterTrait }}}
- */
 
 zval *get_listeners(zval *this_ptr TSRMLS_DC){
 
@@ -315,7 +293,6 @@ PHP_METHOD(event_emitter_trait, emit) {
     zval_ptr_dtor (&retval);
 }
 
-
 zend_function_entry event_emitter_trait_methods[] = {
 	PHP_ME(event_emitter_trait, on, interface_event_listener_args, ZEND_ACC_PUBLIC)
 	PHP_ME(event_emitter_trait, once, interface_event_listener_args, ZEND_ACC_PUBLIC)
@@ -323,8 +300,16 @@ zend_function_entry event_emitter_trait_methods[] = {
 	PHP_ME(event_emitter_trait, removeAllListeners, interface_event_args, ZEND_ACC_PUBLIC)
 	PHP_ME(event_emitter_trait, listeners, interface_event_args, ZEND_ACC_PUBLIC)
 	PHP_ME(event_emitter_trait, emit, interface_event_arguments_args, ZEND_ACC_PUBLIC)
-	{NULL, NULL, NULL}
+    PHP_FE_END
 };
+
+ZEND_MINIT_FUNCTION(event_emitter_interface){
+  zend_class_entry ce;
+  INIT_CLASS_ENTRY(ce, "Evenement\\EventEmitterInterface", event_emitter_interface_methods);
+  event_emitter_interface_ce = zend_register_internal_interface(&ce TSRMLS_CC);
+
+  return SUCCESS;
+}
 
 ZEND_MINIT_FUNCTION(event_emitter_trait){
 	zend_class_entry ce;
@@ -338,45 +323,43 @@ ZEND_MINIT_FUNCTION(event_emitter_trait){
 	return SUCCESS;
 }
 
+ZEND_MINIT_FUNCTION(event_emitter){
+  zend_class_entry ce;
+  INIT_CLASS_ENTRY(ce, "Evenement\\EventEmitter", event_emitter_trait_methods);
+
+  event_emitter_ce = zend_register_internal_class(&ce TSRMLS_CC);
+  zend_class_implements (event_emitter_ce TSRMLS_CC, 1, event_emitter_interface_ce);
+
+  return SUCCESS;
+}
+
 PHP_MINIT_FUNCTION(evenement)
 {
-	ZEND_MODULE_STARTUP_N(event_emitter_interface)(INIT_FUNC_ARGS_PASSTHRU);
-	ZEND_MODULE_STARTUP_N(event_emitter)(INIT_FUNC_ARGS_PASSTHRU);
-	ZEND_MODULE_STARTUP_N(event_emitter_trait)(INIT_FUNC_ARGS_PASSTHRU);
+    ZEND_MODULE_STARTUP_N(event_emitter_interface)(INIT_FUNC_ARGS_PASSTHRU);
+    ZEND_MODULE_STARTUP_N(event_emitter)(INIT_FUNC_ARGS_PASSTHRU);
+    ZEND_MODULE_STARTUP_N(event_emitter_trait)(INIT_FUNC_ARGS_PASSTHRU);
 
 	return SUCCESS;
 }
-
 
 PHP_MSHUTDOWN_FUNCTION(evenement)
 {
 	return SUCCESS;
 }
 
-
-
 PHP_RINIT_FUNCTION(evenement)
 {
 	return SUCCESS;
 }
-
-
 
 PHP_RSHUTDOWN_FUNCTION(evenement)
 {
 	return SUCCESS;
 }
 
-
 PHP_MINFO_FUNCTION(evenement)
 {
 	php_info_print_table_start();
 	php_info_print_table_header(2, "evenement support", "enabled");
 	php_info_print_table_end();
-
 }
-
-
-
-
-

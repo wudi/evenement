@@ -89,6 +89,8 @@ static const zend_function_entry event_emitter_interface_methods[] = {
     PHP_FE_END
 };
 
+/** {{{ get_listeners
+ */
 zval *get_listeners(zval *this_ptr TSRMLS_DC){
 
   zval *listeners = zend_read_property(event_emitter_trait_ce, this_ptr, ZEND_STRL("listeners"), 1 TSRMLS_CC);
@@ -99,12 +101,12 @@ zval *get_listeners(zval *this_ptr TSRMLS_DC){
     array_init(listeners);
 
     zend_update_property(event_emitter_trait_ce, this_ptr, ZEND_STRL("listeners"), listeners TSRMLS_CC);
-    //zval_ptr_dtor (&listeners);
+    zval_ptr_dtor (&listeners);
   }
 
   return listeners;
 }
-
+/* }}} */
 
 /* {{{ on
  * proto: on($event, callable $listener)
@@ -141,6 +143,7 @@ PHP_METHOD(event_emitter_trait, on) {
     }
 }
 /* }}} */
+
 
 PHP_METHOD(event_emitter_trait, once) {
 	char *event;
@@ -248,7 +251,6 @@ PHP_METHOD(event_emitter_trait, listeners) {
     if(zend_hash_find (Z_ARRVAL_P (listeners), event, event_len + 1, (void **)&value) == SUCCESS){
         RETURN_ZVAL (*value, 1, 0);
     }
-
     array_init (return_value);
 }
 
